@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Contraseñas Seguras</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --background-light: #f4f4f4;
+            --background-dark: #1e1e1e;
+            --text-light: #ffffff;
+            --text-dark: #333;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: var(--background-light);
+            color: var(--text-dark);
+            text-align: center;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        input, button {
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        .dark-mode {
+            background: var(--background-dark);
+            color: var(--text-light);
+        }
+        .dark-mode .container {
+            background: #333;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Generador de Contraseñas</h2>
+        <label for="length">Longitud:</label>
+        <input type="number" id="length" min="8" max="50" value="12">
+        <label><input type="checkbox" id="uppercase" checked> Incluir Mayúsculas</label>
+        <label><input type="checkbox" id="lowercase" checked> Incluir Minúsculas</label>
+        <label><input type="checkbox" id="numbers" checked> Incluir Números</label>
+        <label><input type="checkbox" id="symbols" checked> Incluir Símbolos</label>
+        <button onclick="generatePassword()">Generar Contraseña</button>
+        <input type="text" id="password" readonly>
+        <button onclick="copyPassword()">Copiar</button>
+        <button onclick="toggleDarkMode()">Modo Oscuro/Claro</button>
+    </div>
+
+    <script>
+        function generatePassword() {
+            const length = document.getElementById("length").value;
+            const uppercase = document.getElementById("uppercase").checked;
+            const lowercase = document.getElementById("lowercase").checked;
+            const numbers = document.getElementById("numbers").checked;
+            const symbols = document.getElementById("symbols").checked;
+            
+            const upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const lowerChars = "abcdefghijklmnopqrstuvwxyz";
+            const numberChars = "0123456789";
+            const symbolChars = "!@#$%^&*()_+[]{}|;:,.<>?";
+            
+            let allChars = "";
+            if (uppercase) allChars += upperChars;
+            if (lowercase) allChars += lowerChars;
+            if (numbers) allChars += numberChars;
+            if (symbols) allChars += symbolChars;
+            
+            if (allChars === "") {
+                alert("Selecciona al menos una opción de caracteres.");
+                return;
+            }
+            
+            let password = "";
+            const cryptoArray = new Uint32Array(length);
+            window.crypto.getRandomValues(cryptoArray);
+            
+            for (let i = 0; i < length; i++) {
+                password += allChars[cryptoArray[i] % allChars.length];
+            }
+            
+            document.getElementById("password").value = password;
+        }
+        
+        function copyPassword() {
+            const passwordField = document.getElementById("password");
+            passwordField.select();
+            document.execCommand("copy");
+            alert("Contraseña copiada al portapapeles!");
+        }
+        
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            const mode = document.body.classList.contains("dark-mode") ? "dark" : "light";
+            localStorage.setItem("theme", mode);
+        }
+        
+        window.onload = function () {
+            if (localStorage.getItem("theme") === "dark") {
+                document.body.classList.add("dark-mode");
+            }
+        };
+    </script>
+</body>
+</html>
