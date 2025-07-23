@@ -1,11 +1,154 @@
 ---
-import Welcome from '../components/Welcome.astro';
+// Landing page de agente de seguros profesional
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import background from '../assets/background.svg';
 ---
 
 <Layout>
-	<Welcome />
+  <div id="landing-container">
+    <img id="background" src={background.src} alt="" fetchpriority="high" />
+    <main>
+      <section id="hero">
+        <h1>Tu Seguro, Tu Tranquilidad</h1>
+        <h2>Asesoría profesional en seguros para proteger lo que más importa</h2>
+        <p>Más de 10 años ayudando a familias y empresas a encontrar la mejor cobertura en seguros de vida, autos, salud y más.</p>
+        <a class="cta-button" href="#contacto">Solicita tu asesoría gratuita</a>
+      </section>
+      <section id="servicios">
+        <h3>Servicios</h3>
+        <ul>
+          <li>✔️ Seguros de vida y salud</li>
+          <li>✔️ Seguros de autos y hogar</li>
+          <li>✔️ Seguros para empresas y pymes</li>
+          <li>✔️ Asesoría personalizada y sin costo</li>
+        </ul>
+      </section>
+      <section id="contacto">
+        <h3>Contáctame</h3>
+        <form>
+          <input type="text" name="nombre" placeholder="Tu nombre" required />
+          <input type="email" name="email" placeholder="Tu email" required />
+          <textarea name="mensaje" placeholder="¿En qué puedo ayudarte?" required></textarea>
+          <button type="submit">Enviar mensaje</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <style>
+    #background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      filter: blur(80px);
+    }
+    #landing-container {
+      font-family: Inter, Roboto, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    main {
+      width: 100%;
+      max-width: 600px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 18px;
+      box-shadow: 0 4px 32px rgba(50,69,255,0.08);
+      padding: 2.5rem 2rem 2rem 2rem;
+      margin: 2rem 0;
+    }
+    #hero {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+    #hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: #3245ff;
+    }
+    #hero h2 {
+      font-size: 1.3rem;
+      color: #222;
+      margin-bottom: 1rem;
+    }
+    #hero p {
+      color: #444;
+      margin-bottom: 1.5rem;
+    }
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
+      color: #fff;
+      padding: 0.9em 2em;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 8px rgba(50,69,255,0.12);
+      transition: background 0.2s;
+    }
+    .cta-button:hover {
+      background: linear-gradient(83.21deg, #bc52ee 0%, #3245ff 100%);
+    }
+    #servicios {
+      margin-bottom: 2rem;
+    }
+    #servicios h3 {
+      color: #3245ff;
+      margin-bottom: 0.7rem;
+    }
+    #servicios ul {
+      list-style: none;
+      padding: 0;
+      color: #333;
+      font-size: 1.1rem;
+    }
+    #servicios li {
+      margin-bottom: 0.5rem;
+    }
+    #contacto h3 {
+      color: #3245ff;
+      margin-bottom: 0.7rem;
+    }
+    #contacto form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    #contacto input, #contacto textarea {
+      padding: 0.7em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      resize: none;
+    }
+    #contacto button {
+      background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.8em;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #contacto button:hover {
+      background: linear-gradient(83.21deg, #bc52ee 0%, #3245ff 100%);
+    }
+    @media (max-width: 700px) {
+      main {
+        max-width: 98vw;
+        padding: 1.2rem 0.5rem;
+      }
+      #hero h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
 </Layout>
