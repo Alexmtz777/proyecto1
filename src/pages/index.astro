@@ -25,12 +25,62 @@ import background from '../assets/background.svg';
       </section>
       <section id="contacto">
         <h3>Contáctame</h3>
-        <form>
+        <div class="contact-info">
+          <div class="whatsapp-contact">
+            <a href="https://wa.me/5216181023332" class="whatsapp-button" target="_blank" rel="noopener">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
+              </svg>
+              Contactar por WhatsApp
+            </a>
+            <p class="whatsapp-text">Responde en minutos • Asesoría gratuita</p>
+          </div>
+          <div class="contact-divider">
+            <span>o</span>
+          </div>
+        </div>
+        <form id="contactForm">
           <input type="text" name="nombre" placeholder="Tu nombre" required />
           <input type="email" name="email" placeholder="Tu email" required />
+          <input type="tel" name="whatsapp" placeholder="Tu número de WhatsApp" pattern="[0-9]+" minlength="10" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required />
           <textarea name="mensaje" placeholder="¿En qué puedo ayudarte?" required></textarea>
-          <button type="submit">Enviar mensaje</button>
+          <button type="submit" id="submitBtn">Enviar mensaje</button>
         </form>
+        
+        <script>
+          document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault()
+            
+            const submitBtn = document.getElementById('submitBtn')
+            const originalText = submitBtn.textContent
+            submitBtn.textContent = 'Enviando...'
+            submitBtn.disabled = true
+            
+            const formData = new FormData(this)
+            
+            try {
+              const response = await fetch('/api/contact', {
+                method: 'POST',
+                body: formData
+              })
+              
+              const result = await response.json()
+              
+              if (result.success) {
+                alert('¡Mensaje enviado correctamente! Te contactaremos pronto.')
+                this.reset()
+              } else {
+                alert('Error al enviar el mensaje. Por favor intenta de nuevo.')
+              }
+            } catch (error) {
+              console.error('Error:', error)
+              alert('Error al enviar el mensaje. Por favor intenta de nuevo.')
+            } finally {
+              submitBtn.textContent = originalText
+              submitBtn.disabled = false
+            }
+          })
+        </script>
       </section>
     </main>
   </div>
@@ -113,7 +163,58 @@ import background from '../assets/background.svg';
     }
     #contacto h3 {
       color: #3245ff;
-      margin-bottom: 0.7rem;
+      margin-bottom: 1rem;
+    }
+    .contact-info {
+      margin-bottom: 1.5rem;
+    }
+    .whatsapp-contact {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .whatsapp-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #25D366;
+      color: white;
+      padding: 0.9em 1.5em;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+      transition: all 0.2s ease;
+    }
+    .whatsapp-button:hover {
+      background: #128C7E;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+    }
+    .whatsapp-text {
+      margin-top: 0.5rem;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    .contact-divider {
+      text-align: center;
+      margin: 1rem 0;
+      position: relative;
+    }
+    .contact-divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #ddd;
+    }
+    .contact-divider span {
+      background: rgba(255,255,255,0.95);
+      padding: 0 1rem;
+      color: #666;
+      font-size: 0.9rem;
     }
     #contacto form {
       display: flex;

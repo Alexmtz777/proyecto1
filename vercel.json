@@ -1,0 +1,11 @@
+{
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "dist",
+  "framework": "astro",
+  "functions": {
+    "src/pages/api/contact.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "installCommand": "pnpm install"
+} 
