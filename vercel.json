@@ -1,5 +1,4 @@
 {
-  "name": "proyecto1-astro-app",
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "framework": "astro",
