@@ -3,9 +3,7 @@
   "outputDirectory": "dist",
   "framework": "astro",
   "functions": {
-    "src/pages/api/contact.js": {
-      "runtime": "nodejs18.x"
-    }
+    "src/pages/api/contact.js": { "runtime": "nodejs18.x" }
   },
   "installCommand": "pnpm install"
-} 
+}
