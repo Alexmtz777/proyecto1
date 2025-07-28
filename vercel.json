@@ -3,8 +3,5 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "framework": "astro",
-  "functions": {
-    "src/pages/api/contact.js": { "runtime": "@vercel/node@18" }
-  },
   "installCommand": "pnpm install"
 }
