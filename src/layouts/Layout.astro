@@ -2,18 +2,20 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import AuthProvider from '../components/AuthProvider.astro';
+import ThemeScript from '../components/ThemeScript.astro';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="light">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Agente de Seguros Alejandro Martinez</title>
+		<ThemeScript />
 	</head>
-	<body>
+	<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-200">
 		<Header />
 		<main>
 			<slot />
