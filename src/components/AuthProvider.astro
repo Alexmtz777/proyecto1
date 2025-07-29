@@ -1,0 +1,51 @@
+---
+// Componente para manejar el estado de autenticación
+---
+
+<script>
+	import { supabase } from '../lib/supabase.js';
+
+	// Verificar el estado de autenticación al cargar la página
+	document.addEventListener('DOMContentLoaded', async () => {
+		const { data: { session } } = await supabase.auth.getSession();
+		
+		if (session) {
+			// Usuario está autenticado
+			console.log('Usuario autenticado:', session.user.email);
+			
+			// Actualizar la UI para mostrar que está logueado
+			const header = document.querySelector('header');
+			if (header) {
+				// Agregar botón de logout si no existe
+				if (!document.getElementById('logoutBtn')) {
+					const nav = header.querySelector('nav');
+					if (nav) {
+						const logoutBtn = document.createElement('button');
+						logoutBtn.id = 'logoutBtn';
+						logoutBtn.textContent = 'Cerrar Sesión';
+						logoutBtn.className = 'text-sm font-medium transition-colors hover:text-red-500 ml-4';
+						logoutBtn.onclick = async () => {
+							await supabase.auth.signOut();
+							window.location.reload();
+						};
+						nav.appendChild(logoutBtn);
+					}
+				}
+			}
+		} else {
+			// Usuario no está autenticado
+			console.log('Usuario no autenticado');
+		}
+	});
+
+	// Escuchar cambios en el estado de autenticación
+	supabase.auth.onAuthStateChange((event, session) => {
+		if (event === 'SIGNED_IN') {
+			console.log('Usuario inició sesión:', session?.user.email);
+			window.location.reload();
+		} else if (event === 'SIGNED_OUT') {
+			console.log('Usuario cerró sesión');
+			window.location.reload();
+		}
+	});
+</script> 

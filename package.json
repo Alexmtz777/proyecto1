@@ -9,6 +9,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.0",
+    "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-navigation-menu": "^1.2.13",
     "@radix-ui/react-slot": "^1.2.3",
     "@supabase/supabase-js": "^2.52.1",
@@ -16,7 +18,9 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.532.0",
-    "tailwind-merge": "^3.3.1"
+    "react-hook-form": "^7.61.1",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^4.0.11"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^6.0.2",
