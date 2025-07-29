@@ -3,6 +3,8 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import AuthProvider from '../components/AuthProvider.astro';
 import ThemeScript from '../components/ThemeScript.astro';
+import KeyboardNavigation from '../components/KeyboardNavigation.astro';
+import ScrollToTop from '../components/ScrollToTop.astro';
 ---
 
 <!doctype html>
@@ -21,6 +23,8 @@ import ThemeScript from '../components/ThemeScript.astro';
 			<slot />
 		</main>
 		<AuthProvider />
+		<KeyboardNavigation />
+		<ScrollToTop />
 	</body>
 </html>
 

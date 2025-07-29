@@ -5,6 +5,12 @@ import ThemeToggle from './ThemeToggle';
 
 <header class="w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
   <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+    <!-- Breadcrumbs para páginas internas -->
+    <div class="hidden md:flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+      <a href="/" class="hover:text-gray-900 dark:hover:text-white transition-colors">Inicio</a>
+      <span id="breadcrumb-separator" class="hidden">/</span>
+      <span id="breadcrumb-current" class="hidden"></span>
+    </div>
     <!-- Logo/Nombre del sitio -->
     <div class="flex items-center space-x-3">
       <img src="/logo.svg" alt="DEL PALACIO SEGUROS" class="h-12 w-auto" />
@@ -37,4 +43,27 @@ import ThemeToggle from './ThemeToggle';
       <ThemeToggle client:load />
     </nav>
   </div>
-</header> 
+</header>
+
+<script>
+  // Script para manejar breadcrumbs dinámicamente
+  document.addEventListener('DOMContentLoaded', () => {
+    const path = window.location.pathname;
+    const breadcrumbSeparator = document.getElementById('breadcrumb-separator');
+    const breadcrumbCurrent = document.getElementById('breadcrumb-current');
+    
+    // Mapeo de rutas a nombres de página
+    const pageNames = {
+      '/ingresar': 'Iniciar Sesión',
+      '/resenas': 'Reseñas',
+      '/blog': 'Blog'
+    };
+    
+    // Mostrar breadcrumbs solo si no estamos en la página principal
+    if (path !== '/' && pageNames[path]) {
+      breadcrumbSeparator.classList.remove('hidden');
+      breadcrumbCurrent.classList.remove('hidden');
+      breadcrumbCurrent.textContent = pageNames[path];
+    }
+  });
+</script> 

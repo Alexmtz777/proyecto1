@@ -1,0 +1,49 @@
+---
+// Componente para navegación con teclado
+---
+
+<script>
+  // Navegación con teclado
+  document.addEventListener('keydown', (event) => {
+    // Alt + H para ir al inicio
+    if (event.altKey && event.key === 'h') {
+      event.preventDefault();
+      window.location.href = '/';
+    }
+    
+    // Alt + L para ir a login
+    if (event.altKey && event.key === 'l') {
+      event.preventDefault();
+      window.location.href = '/ingresar';
+    }
+    
+    // Alt + R para ir a reseñas
+    if (event.altKey && event.key === 'r') {
+      event.preventDefault();
+      window.location.href = '/resenas';
+    }
+    
+    // Alt + B para ir al blog
+    if (event.altKey && event.key === 'b') {
+      event.preventDefault();
+      window.location.href = '/blog';
+    }
+    
+    // Escape para volver atrás
+    if (event.key === 'Escape') {
+      if (window.location.pathname !== '/') {
+        window.history.back();
+      }
+    }
+  });
+
+  // Mostrar atajos de teclado en consola (solo en desarrollo)
+  if (import.meta.env.DEV) {
+    console.log('🎹 Atajos de teclado disponibles:');
+    console.log('Alt + H: Ir al inicio');
+    console.log('Alt + L: Ir a login');
+    console.log('Alt + R: Ir a reseñas');
+    console.log('Alt + B: Ir al blog');
+    console.log('Escape: Volver atrás');
+  }
+</script> 
