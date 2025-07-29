@@ -1,0 +1,98 @@
+---
+alwaysApply: true
+---
+Título: coding
+
+Eres un experto en TypeScript, Node.js, Next.js App Router, React, Supabase, Shadcn UI, Radix UI y Tailwind.
+
+### Organización y Arquitectura del Proyecto
+
+- Usa la estructura de directorios `app/` (`layout.tsx`, `page.tsx`, `loading.tsx`, `error.tsx`).
+- Agrupa los archivos por dominio cuando sea posible (ej., `features/auth`, `features/dashboard`).
+- Usa `lib/` para lógica de bajo nivel como el cliente de Supabase o utilidades de terceros.
+- Coloca las migraciones y las edge functions dentro del directorio `supabase/`.
+
+### Integración con Supabase
+
+- Usa `lib/supabase/server.ts` y `lib/supabase/client.ts` para separar los entornos.
+- Nunca accedas a Supabase directamente en los componentes; usa server actions o rutas de API.
+- Habilita la Seguridad a Nivel de Fila (RLS) y Supabase Auth desde el primer día.
+- Almacena las claves en variables de entorno y usa `.env.local` para secretos de solo desarrollo.
+
+### Estilo y Estructura del Código
+
+- Escribe TypeScript técnico y conciso con ejemplos precisos.
+- Usa comentarios para ayudar a explicar conceptos técnicos y funciones.
+- Prefiere patrones funcionales y declarativos sobre las clases.
+- Evita la duplicación de código mediante funciones de ayuda y componentes modulares.
+- Usa nombres de variables descriptivos con verbos auxiliares (ej., `isLoading`, `hasError`).
+- La estructura de archivos debe seguir: componente exportado → subcomponentes → helpers → estáticos → tipos.
+
+### Convenciones de Nomenclatura
+
+- Usa minúsculas con guiones para los directorios (ej., `components/auth-wizard`).
+- Usa exportaciones nombradas para los componentes.
+- Usa interfaces en lugar de types para las formas de los objetos.
+- Evita los enums; usa objetos planos.
+
+### Uso de TypeScript
+
+- Todo el código debe escribirse en TypeScript.
+- Prefiere interfaces para props y modelos de datos.
+- Usa componentes funcionales con props claramente tipadas.
+- Evita `any`; usa `unknown` o tipos explícitos cuando no estés seguro.
+
+### UI y Estilos
+
+- Usa Shadcn UI + Radix para los componentes.
+- Usa Tailwind CSS para el layout, espaciado y estilos de utilidad.
+- Diseño mobile-first y adaptable por defecto usando Tailwind.
+- Usa variantes `dark:` para soportar el modo oscuro donde sea relevante.
+
+### Optimización del Rendimiento
+
+- Minimiza el uso de `'use client'`, `useEffect` y `setState`.
+- Usa React Server Components y Server Actions cuando sea posible.
+- Envuelve los componentes de cliente en `<Suspense>` con fallbacks.
+- Carga perezosa (lazy load) de componentes no críticos.
+- Optimiza las imágenes: usa WebP, incluye ancho/alto, carga perezosa.
+
+### Gestión del Estado
+
+- Usa `useFormState` y `useFormStatus` con server actions.
+- Usa `useOptimistic` para un estado interactivo ligero.
+- Evita librerías de estado global a menos que sea necesario.
+
+### Linting
+
+- Usa ESLint, Prettier y el modo estricto de TypeScript.
+- Valida todas las entradas con `zod`.
+
+### Experiencia del Desarrollador (DX)
+
+- `pnpm dev` debe iniciar sin errores de TypeScript.
+- Documenta las decisiones clave en `README.md` o `docs/`.
+
+### Accesibilidad y UX
+
+- Usa primitivas accesibles de Radix y componentes de Shadcn.
+- Asegura el uso correcto de `aria-*`, manejo del foco y soporte de teclado.
+- Usa espaciado y tipografía consistentes.
+
+### Seguridad
+
+- Variables de Entorno: Nunca expongas secretos en el navegador. Usa `.env.local` para claves privadas y evita usarlas en Componentes de Cliente.
+- Seguridad a Nivel de Fila (RLS) de Supabase: Siempre habilita RLS en cada tabla. Escribe reglas que validen la identidad del usuario mediante `auth.uid()` o `request.auth`.
+- Guardias de Autenticación: Usa validación del lado del servidor para toda la lógica sensible. Nunca confíes solo en las comprobaciones del lado del cliente.
+- Acceso al Cliente de Supabase: Usa la clave `anon` solo en componentes de cliente para consultas públicas y seguras. Usa la clave `service_role` solo en el servidor.
+- Rutas de API / Acciones de Servidor: Valida todas las entradas con `zod` o similar. Verifica los IDs de sesión/usuario antes de acceder o modificar datos.
+- Secretos en Edge Functions: Almacena los secretos en las variables de entorno de las funciones de Supabase, no en el código.
+- Firewall de Aplicaciones Web (WAF) de Vercel: Habilita el WAF en la configuración de Vercel para bloquear amenazas automatizadas.
+- Limita la Exposición de Datos: Devuelve solo los campos necesarios de la base de datos. Evita exponer datos sensibles o innecesarios.
+- Gestión de Sesiones: Usa las comprobaciones de sesión de Supabase Auth en las rutas protegidas. Limpia las sesiones inactivas al cerrar sesión.
+
+### Convenciones Clave
+
+- Optimiza las Core Web Vitals: LCP, CLS, FID.
+- Evita `'use client'` a menos que sea necesario para APIs del navegador.
+- Sigue la documentación oficial de Next.js para enrutamiento, renderizado y obtención de datos.
