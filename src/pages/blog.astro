@@ -1,13 +1,274 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { blogPosts, categories } from '../data/blog-posts';
+
+// Obtener parámetros de URL para filtros
+const url = new URL(Astro.request.url);
+const selectedCategory = url.searchParams.get('category') || 'Todos';
+const searchQuery = url.searchParams.get('search') || '';
+
+// Filtrar artículos
+let filteredPosts = blogPosts;
+
+if (selectedCategory !== 'Todos') {
+  filteredPosts = filteredPosts.filter(post => post.category === selectedCategory);
+}
+
+if (searchQuery) {
+  filteredPosts = filteredPosts.filter(post => 
+    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+}
+
+// Función para formatear fecha
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
 ---
 
 <Layout>
-	<div class="container mx-auto px-4 py-8">
-		<h1 class="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Blog</h1>
-		<p class="text-gray-600 dark:text-gray-400 mb-8">
-			Artículos y consejos sobre seguros, protección financiera y más.
-		</p>
-		<!-- Aquí puedes agregar los artículos del blog -->
+	<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+		<!-- Header del blog -->
+		<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+			<div class="container mx-auto px-4 py-12">
+				<div class="text-center">
+					<h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+						Blog de Seguros
+					</h1>
+					<p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+						Consejos expertos, guías prácticas y las últimas novedades en seguros para proteger lo que más importa.
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Filtros y búsqueda -->
+		<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+			<div class="container mx-auto px-4 py-6">
+				<div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+					<!-- Búsqueda -->
+					<div class="relative w-full md:w-96">
+						<input
+							type="text"
+							id="searchInput"
+							placeholder="Buscar artículos..."
+							value={searchQuery}
+							class="w-full px-4 py-2 pl-10 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+						/>
+						<svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+						</svg>
+					</div>
+
+					<!-- Filtro por categoría -->
+					<select
+						id="categoryFilter"
+						class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+					>
+						{categories.map(category => (
+							<option value={category} selected={category === selectedCategory}>
+								{category}
+							</option>
+						))}
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<!-- Contenido principal -->
+		<div class="container mx-auto px-4 py-8">
+			<!-- Resultados de búsqueda -->
+			<div class="mb-8">
+				<p class="text-gray-600 dark:text-gray-400">
+					{filteredPosts.length === 1 ? '1 artículo encontrado' : `${filteredPosts.length} artículos encontrados`}
+				</p>
+			</div>
+
+			<!-- Grid de artículos -->
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				{filteredPosts.map(post => (
+					<article class="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+						<!-- Imagen del artículo -->
+						<div class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+							<div class="text-white text-center p-4">
+								<svg class="w-16 h-16 mx-auto mb-2 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+									<path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path>
+								</svg>
+								<span class="text-sm font-medium">{post.category}</span>
+							</div>
+						</div>
+
+						<!-- Contenido del artículo -->
+						<div class="p-6">
+							<!-- Meta información -->
+							<div class="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+								<span>{formatDate(post.publishDate)}</span>
+								<span class="mx-2">•</span>
+								<span>{post.readTime} min de lectura</span>
+							</div>
+
+							<!-- Título -->
+							<h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">
+								{post.title}
+							</h2>
+
+							<!-- Extracto -->
+							<p class="text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
+								{post.excerpt}
+							</p>
+
+							<!-- Tags -->
+							<div class="flex flex-wrap gap-2 mb-4">
+								{post.tags.slice(0, 3).map(tag => (
+									<span class="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
+										{tag}
+									</span>
+								))}
+							</div>
+
+							<!-- Botón de leer más -->
+							<button
+								class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors"
+								onclick={`showArticle('${post.id}')`}
+							>
+								Leer más →
+							</button>
+						</div>
+					</article>
+				))}
+			</div>
+
+			<!-- Mensaje cuando no hay resultados -->
+			{filteredPosts.length === 0 && (
+				<div class="text-center py-12">
+					<svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+					</svg>
+					<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No se encontraron artículos</h3>
+					<p class="text-gray-600 dark:text-gray-400">Intenta con otros términos de búsqueda o categorías.</p>
+				</div>
+			)}
+		</div>
 	</div>
+
+	<!-- Modal para mostrar artículo completo -->
+	<div id="articleModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+		<div class="flex items-center justify-center min-h-screen p-4">
+			<div class="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+				<div class="p-6">
+					<div class="flex justify-between items-start mb-4">
+						<h2 id="modalTitle" class="text-2xl font-bold text-gray-900 dark:text-white"></h2>
+						<button
+							onclick="closeModal()"
+							class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+						>
+							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+							</svg>
+						</button>
+					</div>
+					<div id="modalContent" class="prose dark:prose-invert max-w-none"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// Datos de los artículos
+		const articles = {JSON.stringify(blogPosts)};
+
+		// Funciones para el modal
+		function showArticle(articleId) {
+			const article = articles.find(a => a.id === articleId);
+			if (!article) return;
+
+			document.getElementById('modalTitle').textContent = article.title;
+			document.getElementById('modalContent').innerHTML = article.content;
+			document.getElementById('articleModal').classList.remove('hidden');
+			document.body.style.overflow = 'hidden';
+		}
+
+		function closeModal() {
+			document.getElementById('articleModal').classList.add('hidden');
+			document.body.style.overflow = 'auto';
+		}
+
+		// Cerrar modal con Escape
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				closeModal();
+			}
+		});
+
+		// Cerrar modal al hacer clic fuera
+		document.getElementById('articleModal').addEventListener('click', (e) => {
+			if (e.target.id === 'articleModal') {
+				closeModal();
+			}
+		});
+
+		// Filtros y búsqueda
+		function updateFilters() {
+			const searchQuery = document.getElementById('searchInput').value;
+			const category = document.getElementById('categoryFilter').value;
+			
+			const params = new URLSearchParams();
+			if (searchQuery) params.append('search', searchQuery);
+			if (category !== 'Todos') params.append('category', category);
+			
+			window.location.search = params.toString();
+		}
+
+		document.getElementById('searchInput').addEventListener('input', updateFilters);
+		document.getElementById('categoryFilter').addEventListener('change', updateFilters);
+	</script>
+
+	<style>
+		.line-clamp-2 {
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+
+		.line-clamp-3 {
+			display: -webkit-box;
+			-webkit-line-clamp: 3;
+			-webkit-box-orient: vertical;
+			overflow: hidden;
+		}
+
+		.prose {
+			max-width: none;
+		}
+
+		.prose h3 {
+			color: #1f2937;
+			font-size: 1.25rem;
+			font-weight: 600;
+			margin-top: 1.5rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.prose ul {
+			margin-top: 0.75rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.prose li {
+			margin-top: 0.25rem;
+			margin-bottom: 0.25rem;
+		}
+
+		.dark .prose h3 {
+			color: #f9fafb;
+		}
+	</style>
 </Layout> 
