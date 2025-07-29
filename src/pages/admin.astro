@@ -1,0 +1,525 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
+
+// Verificar si el usuario está autenticado y es admin
+const { data: { session } } = await supabase.auth.getSession();
+
+if (!session) {
+  return Astro.redirect('/ingresar?redirect=/admin');
+}
+
+// Obtener información del usuario
+const { data: user } = await supabase
+  .from('users')
+  .select('role, name')
+  .eq('id', session.user.id)
+  .single();
+
+if (!user || user.role !== 'admin') {
+  return Astro.redirect('/?error=unauthorized');
+}
+
+// Obtener estadísticas
+const { count: postsCount } = await supabase
+  .from('blog_posts')
+  .select('*', { count: 'exact', head: true });
+
+const { count: subscribersCount } = await supabase
+  .from('subscriptions')
+  .select('*', { count: 'exact', head: true })
+  .eq('is_active', true);
+
+const { data: recentPosts } = await supabase
+  .from('blog_posts')
+  .select('*')
+  .order('created_at', { ascending: false })
+  .limit(5);
+---
+
+<Layout>
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <!-- Header del admin -->
+    <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div class="container mx-auto px-4 py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+              Panel de Administración
+            </h1>
+            <p class="text-gray-600 dark:text-gray-400">
+              Bienvenido, {user.name}
+            </p>
+          </div>
+          <button
+            id="logoutBtn"
+            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="container mx-auto px-4 py-8">
+      <!-- Estadísticas -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
+              <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Artículos</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">{postsCount}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
+              <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Suscriptores</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">{subscribersCount}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <div class="flex items-center">
+            <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+              <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Hoy</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">{new Date().toLocaleDateString('es-ES')}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones rápidas -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Gestión de Blog
+          </h3>
+          <div class="space-y-3">
+            <button
+              onclick="showCreatePostModal()"
+              class="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              + Crear Nuevo Artículo
+            </button>
+            <button
+              onclick="showNewsletterModal()"
+              class="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              📧 Enviar Newsletter
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Artículos Recientes
+          </h3>
+          <div class="space-y-3">
+            {recentPosts?.map(post => (
+              <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div class="flex-1">
+                  <h4 class="font-medium text-gray-900 dark:text-white text-sm truncate">
+                    {post.title}
+                  </h4>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    {new Date(post.created_at).toLocaleDateString('es-ES')}
+                  </p>
+                </div>
+                <span class={`px-2 py-1 text-xs rounded-full ${
+                  post.is_published 
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                    : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+                }`}>
+                  {post.is_published ? 'Publicado' : 'Borrador'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla de artículos -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+            Todos los Artículos
+          </h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Título
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Categoría
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Estado
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Fecha
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody id="postsTableBody" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <!-- Los posts se cargarán dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para crear/editar artículo -->
+  <div id="postModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <h2 id="modalTitle" class="text-2xl font-bold text-gray-900 dark:text-white">
+              Crear Nuevo Artículo
+            </h2>
+            <button onclick="closePostModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <form id="postForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Título
+              </label>
+              <input
+                type="text"
+                id="postTitle"
+                required
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Extracto
+              </label>
+              <textarea
+                id="postExcerpt"
+                required
+                rows="3"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              ></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Contenido
+              </label>
+              <textarea
+                id="postContent"
+                required
+                rows="10"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              ></textarea>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Categoría
+                </label>
+                <select
+                  id="postCategory"
+                  required
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">Seleccionar categoría</option>
+                  <option value="Seguros de Vida">Seguros de Vida</option>
+                  <option value="Seguros de Auto">Seguros de Auto</option>
+                  <option value="Seguros Empresariales">Seguros Empresariales</option>
+                  <option value="Ahorro">Ahorro</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Tags (separados por comas)
+                </label>
+                <input
+                  type="text"
+                  id="postTags"
+                  placeholder="seguro, vida, protección"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+              <label class="flex items-center">
+                <input
+                  type="checkbox"
+                  id="postPublished"
+                  class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                  Publicar inmediatamente
+                </span>
+              </label>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onclick="closePostModal()"
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Guardar Artículo
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para newsletter -->
+  <div id="newsletterModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div class="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full">
+        <div class="p-6">
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+              Enviar Newsletter
+            </h2>
+            <button onclick="closeNewsletterModal()" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <form id="newsletterForm" class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Asunto
+              </label>
+              <input
+                type="text"
+                id="newsletterSubject"
+                required
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Contenido
+              </label>
+              <textarea
+                id="newsletterContent"
+                required
+                rows="8"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              ></textarea>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4">
+              <button
+                type="button"
+                onclick="closeNewsletterModal()"
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Enviar Newsletter
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Cargar artículos al cargar la página
+    loadPosts();
+
+    // Funciones del modal
+    function showCreatePostModal() {
+      document.getElementById('modalTitle').textContent = 'Crear Nuevo Artículo';
+      document.getElementById('postForm').reset();
+      document.getElementById('postModal').classList.remove('hidden');
+    }
+
+    function closePostModal() {
+      document.getElementById('postModal').classList.add('hidden');
+    }
+
+    function showNewsletterModal() {
+      document.getElementById('newsletterModal').classList.remove('hidden');
+    }
+
+    function closeNewsletterModal() {
+      document.getElementById('newsletterModal').classList.add('hidden');
+    }
+
+    // Cargar artículos
+    async function loadPosts() {
+      try {
+        const response = await fetch('/api/posts');
+        const posts = await response.json();
+        
+        const tbody = document.getElementById('postsTableBody');
+        tbody.innerHTML = posts.map(post => `
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm font-medium text-gray-900 dark:text-white">${post.title}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full">
+                ${post.category}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 py-1 text-xs rounded-full ${
+                post.is_published 
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
+              }">
+                ${post.is_published ? 'Publicado' : 'Borrador'}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+              ${new Date(post.created_at).toLocaleDateString('es-ES')}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+              <button onclick="editPost('${post.id}')" class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-3">
+                Editar
+              </button>
+              <button onclick="deletePost('${post.id}')" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading posts:', error);
+      }
+    }
+
+    // Manejar formulario de artículo
+    document.getElementById('postForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const data = {
+        title: formData.get('title') || document.getElementById('postTitle').value,
+        excerpt: formData.get('excerpt') || document.getElementById('postExcerpt').value,
+        content: formData.get('content') || document.getElementById('postContent').value,
+        category: formData.get('category') || document.getElementById('postCategory').value,
+        tags: (formData.get('tags') || document.getElementById('postTags').value).split(',').map(tag => tag.trim()),
+        is_published: document.getElementById('postPublished').checked
+      };
+
+      try {
+        const response = await fetch('/api/posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          closePostModal();
+          loadPosts();
+          alert('Artículo guardado exitosamente');
+        } else {
+          alert('Error al guardar el artículo');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al guardar el artículo');
+      }
+    });
+
+    // Manejar formulario de newsletter
+    document.getElementById('newsletterForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const data = {
+        subject: document.getElementById('newsletterSubject').value,
+        content: document.getElementById('newsletterContent').value
+      };
+
+      try {
+        const response = await fetch('/api/newsletter', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+          closeNewsletterModal();
+          alert('Newsletter enviado exitosamente');
+        } else {
+          alert('Error al enviar el newsletter');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al enviar el newsletter');
+      }
+    });
+
+    // Cerrar sesión
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await fetch('/api/auth/logout', { method: 'POST' });
+        window.location.href = '/';
+      } catch (error) {
+        console.error('Error logging out:', error);
+      }
+    });
+
+    // Cerrar modales con Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePostModal();
+        closeNewsletterModal();
+      }
+    });
+  </script>
+</Layout> 

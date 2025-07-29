@@ -1,14 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { blogPosts, categories } from '../data/blog-posts';
+import { supabase } from '../lib/supabase-server';
 
 // Obtener parámetros de URL para filtros
 const url = new URL(Astro.request.url);
 const selectedCategory = url.searchParams.get('category') || 'Todos';
 const searchQuery = url.searchParams.get('search') || '';
 
+// Obtener artículos publicados de Supabase
+const { data: blogPosts, error } = await supabase
+  .from('blog_posts')
+  .select('*')
+  .eq('is_published', true)
+  .order('published_at', { ascending: false });
+
+if (error) {
+  console.error('Error loading blog posts:', error);
+}
+
 // Filtrar artículos
-let filteredPosts = blogPosts;
+let filteredPosts = blogPosts || [];
 
 if (selectedCategory !== 'Todos') {
   filteredPosts = filteredPosts.filter(post => post.category === selectedCategory);
@@ -18,9 +29,12 @@ if (searchQuery) {
   filteredPosts = filteredPosts.filter(post => 
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+    (post.tags && post.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())))
   );
 }
+
+// Obtener categorías únicas
+const categories = ['Todos', ...new Set((blogPosts || []).map(post => post.category))];
 
 // Función para formatear fecha
 function formatDate(dateString: string) {
@@ -180,9 +194,9 @@ function formatDate(dateString: string) {
 		</div>
 	</div>
 
-	<script>
+	<script define:vars={{ blogPosts }}>
 		// Datos de los artículos
-		const articles = {JSON.stringify(blogPosts)};
+		const articles = blogPosts;
 
 		// Funciones para el modal
 		function showArticle(articleId) {

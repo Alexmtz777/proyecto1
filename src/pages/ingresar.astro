@@ -3,233 +3,109 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-	<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+	<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
 		<div class="max-w-md w-full space-y-8">
-			<div class="text-center">
-				<h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-					Iniciar Sesión
+			<div>
+				<h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+					Acceso al Sistema
 				</h2>
-				<p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-					Accede a tu cuenta para gestionar tus seguros
+				<p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+					Inicia sesión como administrador o suscríbete para recibir novedades
 				</p>
 			</div>
 
-			<!-- Formulario de Login -->
-			<form id="loginForm" class="mt-8 space-y-6">
-				<div class="rounded-md shadow-sm -space-y-px">
+			<!-- Login para administradores -->
+			<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+				<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+					🔐 Acceso Administrativo
+				</h3>
+				<form class="space-y-4" id="loginForm">
 					<div>
-						<label for="email" class="sr-only">Correo electrónico</label>
-						<input
-							id="email"
-							name="email"
-							type="email"
-							autocomplete="email"
-							required
-							class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-							placeholder="Correo electrónico"
-						/>
+						<label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+							Email
+						</label>
+						<input id="email" name="email" type="email" required class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700" placeholder="admin@delpalacioseguros.com">
 					</div>
 					<div>
-						<label for="password" class="sr-only">Contraseña</label>
-						<input
-							id="password"
-							name="password"
-							type="password"
-							autocomplete="current-password"
-							required
-							class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white bg-white dark:bg-gray-700 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-							placeholder="Contraseña"
-						/>
+						<label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+							Contraseña
+						</label>
+						<input id="password" name="password" type="password" required class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-gray-700" placeholder="••••••••">
 					</div>
-				</div>
+					<div>
+						<button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+							Iniciar Sesión
+						</button>
+					</div>
+				</form>
+			</div>
 
-				<div class="flex items-center justify-between">
+			<!-- Separador -->
+			<div class="relative">
+				<div class="absolute inset-0 flex items-center">
+					<div class="w-full border-t border-gray-300 dark:border-gray-600"></div>
+				</div>
+				<div class="relative flex justify-center text-sm">
+					<span class="px-2 bg-gray-50 dark:bg-gray-900 text-gray-500 dark:text-gray-400">O</span>
+				</div>
+			</div>
+
+			<!-- Formulario de registro para newsletter -->
+			<div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+				<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+					📧 Suscríbete a nuestro newsletter
+				</h3>
+				<p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+					Recibe las últimas novedades sobre seguros, consejos y ofertas especiales.
+				</p>
+				<form class="space-y-4" id="newsletterForm">
+					<div>
+						<label for="newsletterName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+							Nombre
+						</label>
+						<input id="newsletterName" name="name" type="text" required class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm bg-white dark:bg-gray-700" placeholder="Tu nombre completo">
+					</div>
+					<div>
+						<label for="newsletterEmail" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+							Email
+						</label>
+						<input id="newsletterEmail" name="email" type="email" required class="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm bg-white dark:bg-gray-700" placeholder="tu@email.com">
+					</div>
 					<div class="flex items-center">
-						<input
-							id="remember-me"
-							name="remember-me"
-							type="checkbox"
-							class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-						/>
-						<label for="remember-me" class="ml-2 block text-sm text-gray-900">
-							Recordarme
+						<input id="newsletterConsent" name="consent" type="checkbox" required class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+						<label for="newsletterConsent" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+							Acepto recibir comunicaciones por email
 						</label>
 					</div>
-
-					<div class="text-sm">
-						<a href="#" class="font-medium text-blue-600 hover:text-blue-500">
-							¿Olvidaste tu contraseña?
-						</a>
-					</div>
-				</div>
-
-				<div>
-					<button
-						type="submit"
-						id="loginBtn"
-						class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-					>
-						<span class="absolute left-0 inset-y-0 flex items-center pl-3">
-							<svg class="h-5 w-5 text-blue-500 group-hover:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-								<path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-							</svg>
-						</span>
-						Iniciar Sesión
-					</button>
-				</div>
-
-				<div class="text-center">
-					<button
-						type="button"
-						id="showRegisterBtn"
-						class="text-sm text-blue-600 hover:text-blue-500"
-					>
-						¿No tienes cuenta? Regístrate aquí
-					</button>
-				</div>
-			</form>
-
-			<!-- Formulario de Registro (oculto inicialmente) -->
-			<form id="registerForm" class="mt-8 space-y-6 hidden">
-				<div class="rounded-md shadow-sm -space-y-px">
 					<div>
-						<label for="regName" class="sr-only">Nombre completo</label>
-						<input
-							id="regName"
-							name="name"
-							type="text"
-							required
-							class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-							placeholder="Nombre completo"
-						/>
+						<button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+							Suscribirse
+						</button>
 					</div>
-					<div>
-						<label for="regEmail" class="sr-only">Correo electrónico</label>
-						<input
-							id="regEmail"
-							name="email"
-							type="email"
-							autocomplete="email"
-							required
-							class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-							placeholder="Correo electrónico"
-						/>
-					</div>
-					<div>
-						<label for="regPassword" class="sr-only">Contraseña</label>
-						<input
-							id="regPassword"
-							name="password"
-							type="password"
-							autocomplete="new-password"
-							required
-							class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-							placeholder="Contraseña"
-						/>
-					</div>
-					<div>
-						<label for="regConfirmPassword" class="sr-only">Confirmar contraseña</label>
-						<input
-							id="regConfirmPassword"
-							name="confirmPassword"
-							type="password"
-							autocomplete="new-password"
-							required
-							class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-							placeholder="Confirmar contraseña"
-						/>
-					</div>
-				</div>
+				</form>
+			</div>
 
-				<div>
-					<button
-						type="submit"
-						id="registerBtn"
-						class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-					>
-						<span class="absolute left-0 inset-y-0 flex items-center pl-3">
-							<svg class="h-5 w-5 text-green-500 group-hover:text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-								<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-							</svg>
-						</span>
-						Crear Cuenta
-					</button>
-				</div>
-
-				<div class="text-center">
-					<button
-						type="button"
-						id="showLoginBtn"
-						class="text-sm text-blue-600 hover:text-blue-500"
-					>
-						¿Ya tienes cuenta? Inicia sesión aquí
-					</button>
-				</div>
-			</form>
-
-			<!-- Mensajes de estado -->
-			<div id="message" class="hidden mt-4 p-4 rounded-md"></div>
+			<!-- Información adicional -->
+			<div class="text-center">
+				<p class="text-xs text-gray-500 dark:text-gray-400">
+					¿Eres agente de seguros? 
+					<a href="mailto:admin@delpalacioseguros.com" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+						Contacta para obtener acceso administrativo
+					</a>
+				</p>
+			</div>
 		</div>
 	</div>
 
 	<script>
-		// Importar Supabase
-		import { supabase } from '../lib/supabase.js';
+		import { supabase } from '../lib/supabase';
 
-		// Elementos del DOM
-		const loginForm = document.getElementById('loginForm');
-		const registerForm = document.getElementById('registerForm');
-		const showRegisterBtn = document.getElementById('showRegisterBtn');
-		const showLoginBtn = document.getElementById('showLoginBtn');
-		const messageDiv = document.getElementById('message');
-
-		// Función para mostrar mensajes
-		function showMessage(message, type = 'info') {
-			messageDiv.textContent = message;
-			messageDiv.className = `mt-4 p-4 rounded-md ${
-				type === 'error' ? 'bg-red-100 text-red-700 border border-red-400' :
-				type === 'success' ? 'bg-green-100 text-green-700 border border-green-400' :
-				'bg-blue-100 text-blue-700 border border-blue-400'
-			}`;
-			messageDiv.classList.remove('hidden');
-		}
-
-		// Función para ocultar mensajes
-		function hideMessage() {
-			messageDiv.classList.add('hidden');
-		}
-
-		// Cambiar entre formularios
-		showRegisterBtn.addEventListener('click', () => {
-			loginForm.classList.add('hidden');
-			registerForm.classList.remove('hidden');
-			hideMessage();
-		});
-
-		showLoginBtn.addEventListener('click', () => {
-			registerForm.classList.add('hidden');
-			loginForm.classList.remove('hidden');
-			hideMessage();
-		});
-
-		// Manejar login
-		loginForm.addEventListener('submit', async (e) => {
+		// Login form
+		document.getElementById('loginForm').addEventListener('submit', async (e) => {
 			e.preventDefault();
-			hideMessage();
-
+			
 			const email = document.getElementById('email').value;
 			const password = document.getElementById('password').value;
-			const loginBtn = document.getElementById('loginBtn');
-
-			// Validación básica
-			if (!email || !password) {
-				showMessage('Por favor completa todos los campos', 'error');
-				return;
-			}
-
-			// Mostrar estado de carga
-			loginBtn.disabled = true;
-			loginBtn.textContent = 'Iniciando sesión...';
 
 			try {
 				const { data, error } = await supabase.auth.signInWithPassword({
@@ -237,83 +113,57 @@ import Layout from '../layouts/Layout.astro';
 					password
 				});
 
-				if (error) {
-					throw error;
+				if (error) throw error;
+
+				// Verificar el rol del usuario
+				const { data: userData } = await supabase
+					.from('users')
+					.select('role')
+					.eq('id', data.user.id)
+					.single();
+
+				if (userData?.role === 'admin') {
+					window.location.href = '/admin';
+				} else {
+					alert('Acceso denegado. Solo administradores pueden acceder.');
 				}
-
-				showMessage('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
-				
-				// Redirigir al dashboard o página principal
-				setTimeout(() => {
-					window.location.href = '/';
-				}, 1500);
-
 			} catch (error) {
-				console.error('Error de login:', error);
-				showMessage(error.message || 'Error al iniciar sesión', 'error');
-			} finally {
-				loginBtn.disabled = false;
-				loginBtn.textContent = 'Iniciar Sesión';
+				alert('Error al iniciar sesión: ' + error.message);
 			}
 		});
 
-		// Manejar registro
-		registerForm.addEventListener('submit', async (e) => {
+		// Newsletter form
+		document.getElementById('newsletterForm').addEventListener('submit', async (e) => {
 			e.preventDefault();
-			hideMessage();
+			
+			const name = document.getElementById('newsletterName').value;
+			const email = document.getElementById('newsletterEmail').value;
+			const consent = document.getElementById('newsletterConsent').checked;
 
-			const name = document.getElementById('regName').value;
-			const email = document.getElementById('regEmail').value;
-			const password = document.getElementById('regPassword').value;
-			const confirmPassword = document.getElementById('regConfirmPassword').value;
-			const registerBtn = document.getElementById('registerBtn');
-
-			// Validaciones
-			if (!name || !email || !password || !confirmPassword) {
-				showMessage('Por favor completa todos los campos', 'error');
+			if (!consent) {
+				alert('Debes aceptar recibir comunicaciones por email.');
 				return;
 			}
-
-			if (password !== confirmPassword) {
-				showMessage('Las contraseñas no coinciden', 'error');
-				return;
-			}
-
-			if (password.length < 6) {
-				showMessage('La contraseña debe tener al menos 6 caracteres', 'error');
-				return;
-			}
-
-			// Mostrar estado de carga
-			registerBtn.disabled = true;
-			registerBtn.textContent = 'Creando cuenta...';
 
 			try {
-				const { data, error } = await supabase.auth.signUp({
-					email,
-					password,
-					options: {
-						data: {
-							full_name: name
-						}
-					}
-				});
+				const { error } = await supabase
+					.from('subscriptions')
+					.insert({
+						name,
+						email,
+						is_active: true
+					});
 
-				if (error) {
-					throw error;
-				}
+				if (error) throw error;
 
-				showMessage('¡Cuenta creada exitosamente! Revisa tu correo para confirmar tu cuenta.', 'success');
-				
-				// Limpiar formulario
-				registerForm.reset();
-
+				alert('¡Gracias por suscribirte! Te mantendremos informado sobre las novedades.');
+				document.getElementById('newsletterForm').reset();
 			} catch (error) {
-				console.error('Error de registro:', error);
-				showMessage(error.message || 'Error al crear la cuenta', 'error');
-			} finally {
-				registerBtn.disabled = false;
-				registerBtn.textContent = 'Crear Cuenta';
+				if (error.code === '23505') {
+					alert('Este email ya está suscrito.');
+				} else {
+					alert('Error al suscribirse: ' + error.message);
+				}
 			}
 		});
 	</script>
